@@ -1,0 +1,33 @@
+{
+    "cmake.buildBeforeRun": true,
+    "lldb.showDisassembly": "never",
+    "lldb.dereferencePointers": true,
+    "lldb.consoleMode": "commands",
+    "yaml.schemas": {
+        "https://json.schemastore.org/clangd.json": [
+            "file:///c%3A/Users/michael/AppData/Local/clangd/config.yaml",
+            "file:///d%3A/Repository/LeetCoding/.clangd"
+        ]
+    },
+    "debug.disassemblyView.showSourceCode": false,
+    "cmake.buildTask": true,
+    "cmake.parseBuildDiagnostics": true
+   
+    // "clangd.arguments": [
+    //     "--background-index",
+    //     "--header-insertion=iwyu",
+    //     "--compile-commands-dir=${workspaceFolder}/.vscode",
+    //     "-j=10",
+    //     "--all-scopes-completion",
+    //     "--completion-style=detailed",
+    //     "--header-insertion=iwyu",
+    //     "--pch-storage=memory",
+    //     "--cross-file-rename",
+    //     "--enable-config",
+    //     "--fallback-style=WebKit",
+    //     "--function-arg-placeholders=false",
+    //     "--pretty",
+    //     "--clang-tidy",
+    //     // "--std=c++17"
+    // ]
+}
