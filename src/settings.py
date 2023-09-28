@@ -15,8 +15,3 @@ STORAGE_FOLDER = os.path.join(WORK_FOLDER, "files")
 STORAGE_INFORMATION_PATH = os.path.join(STORAGE_FOLDER, "information.json")
 
 REGEX = r"^files\/.*"
-
-
-
-
-
