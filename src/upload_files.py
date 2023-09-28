@@ -4,6 +4,7 @@ import shutil
 import utils
 from utils import print_when_debug
 from settings import *
+from enum import Enum, auto
 
 
 class Program:
@@ -12,9 +13,14 @@ class Program:
     comment: str
     cur_repo = Repo(WORK_FOLDER)
     git_cli = cur_repo.git
+
     class FileDetail(pydantic.BaseModel):
         comment: str = ""
         time: str = ""
+
+    class Command(Enum):
+        add = auto()
+        cat = auto()
 
     def __init__(self) -> None:
         self.git_cli.fetch()
@@ -58,9 +64,16 @@ class Program:
     def get_args():
         parser = argparse.ArgumentParser()
         sub_command = parser.add_subparsers(help="sub commend")
-        parser_add = sub_command.add_parser("add", help="add file")
+
+        parser_add = sub_command.add_parser(Program.Command.add.name, help="add file")
+
         parser_add.add_argument("file_name", nargs=1, type=str)
         parser_add.add_argument("-c", "--comment", required=False)
+        parser_add.set_defaults(command=Program.Command.add)
+
+        parser_cat = sub_command.add_parser(Program.Command.cat.name, help="see content of file")
+        parser_cat.add_argument("file_name", nargs=1, type=str)
+        parser_cat.set_defaults(command=Program.Command.cat)
         return parser.parse_args()
 
     def register_to_storage(self):
@@ -69,10 +82,10 @@ class Program:
             raise RuntimeError(f"file not exists: {file_path}")
 
         register_file_name = self.file_name
+        register_file_prefix, register_file_suffix = os.path.splitext(self.file_name)
         if self.file_name in self.file_info_dict.keys():
             suffix = 1
             while True:
-                register_file_prefix, register_file_suffix = os.path.splitext(register_file_name)
                 register_file_name = f"{register_file_prefix}_{suffix}{register_file_suffix}"
                 if register_file_name in self.file_info_dict.keys():
                     suffix += 1
@@ -88,11 +101,17 @@ class Program:
 
     def run(self):
         args = self.get_args()
-        self.file_name = args.file_name[0]
-        self.comment = args.comment
-        self.register_to_storage()
-        self.save_file_info()
-        self.upload_files()
+        if args.command == Program.Command.add:
+            self.file_name = args.file_name[0]
+            self.comment = args.comment
+            self.register_to_storage()
+            self.save_file_info()
+            self.upload_files()
+        elif args.command == Program.Command.cat:
+            self.file_name = args.file_name[0]
+            ...
+        else:
+            raise
 
     def upload_files(self):
         self.git_cli.fetch()
