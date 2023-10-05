@@ -4,6 +4,7 @@ from datetime import datetime
 import pytz
 from pydantic import BaseModel
 from utils import print_when_debug
+__all__ = ["GistModel", "Gist"]
 
 
 class GistModel(BaseModel):
@@ -61,7 +62,6 @@ class Gist:
             f"{self.url}/{gist_id}", headers=self.header, timeout=10000, json=data.model_dump()
         )
         return req.json()
-        ...
 
 
 if __name__ == "__main__":

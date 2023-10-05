@@ -5,6 +5,7 @@ import utils
 from utils import print_when_debug
 from settings import *
 from enum import Enum, auto
+import api
 
 
 class Program:
@@ -75,7 +76,7 @@ class Program:
         parser_cat = sub_command.add_parser(Program.Command.cat.name, help="see content of file")
         parser_cat.add_argument("file_name", nargs=1, type=str)
         parser_cat.set_defaults(command=Program.Command.cat)
-        
+
         parser_list = sub_command.add_parser(Program.Command.list.name, help="list file name")
         parser_list.set_defaults(command=Program.Command.list)
         return parser.parse_args()
@@ -121,22 +122,30 @@ class Program:
 
     def see_file_content(self):
         ...
+
     def upload_files(self):
-        self.git_cli.fetch()
-        self.git_cli.pull()
-        staged_files = [pth.a_path for pth in self.cur_repo.index.diff("HEAD")]
-        config_files = []
-        for fl in self.cur_repo.untracked_files:
-            if re.fullmatch(REGEX, fl):
-                config_files.append(fl)
-        if len(config_files) != 0:
-            self.git_cli.reset()
-            self.git_cli.add("files/**")
-            self.cur_repo.index.commit("automatic commit")
-            self.git_cli.push()
-            self.cur_repo.index.add(staged_files)
-        print_when_debug(self.cur_repo.untracked_files)
-        print_when_debug([pth.a_path for pth in self.cur_repo.index.diff("HEAD")])
+        gist_data = api.Gist().get_gist(GIST_ID)
+        file_dict = {}
+        # for files in os.listdir(os.PATH)
+        res = api.Gist().update_gist(
+            GIST_ID, api.GistModel(description=gist_data.description, public=gist_data.public)
+        )
+        ...
+        # self.git_cli.fetch()
+        # self.git_cli.pull()
+        # staged_files = [pth.a_path for pth in self.cur_repo.index.diff("HEAD")]
+        # config_files = []
+        # for fl in self.cur_repo.untracked_files:
+        #     if re.fullmatch(REGEX, fl):
+        #         config_files.append(fl)
+        # if len(config_files) != 0:
+        #     self.git_cli.reset()
+        #     self.git_cli.add("files/**")
+        #     self.cur_repo.index.commit("automatic commit")
+        #     self.git_cli.push()
+        #     self.cur_repo.index.add(staged_files)
+        # print_when_debug(self.cur_repo.untracked_files)
+        # print_when_debug([pth.a_path for pth in self.cur_repo.index.diff("HEAD")])
 
 
 def main():
