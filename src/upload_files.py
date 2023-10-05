@@ -21,6 +21,7 @@ class Program:
     class Command(Enum):
         add = auto()
         cat = auto()
+        list = auto()
 
     def __init__(self) -> None:
         self.git_cli.fetch()
@@ -74,6 +75,9 @@ class Program:
         parser_cat = sub_command.add_parser(Program.Command.cat.name, help="see content of file")
         parser_cat.add_argument("file_name", nargs=1, type=str)
         parser_cat.set_defaults(command=Program.Command.cat)
+        
+        parser_list = sub_command.add_parser(Program.Command.list.name, help="list file name")
+        parser_list.set_defaults(command=Program.Command.list)
         return parser.parse_args()
 
     def register_to_storage(self):
@@ -110,9 +114,13 @@ class Program:
         elif args.command == Program.Command.cat:
             self.file_name = args.file_name[0]
             ...
+        elif args.command == Program.Command.list:
+            ...
         else:
-            raise
+            raise RuntimeError
 
+    def see_file_content(self):
+        ...
     def upload_files(self):
         self.git_cli.fetch()
         self.git_cli.pull()
