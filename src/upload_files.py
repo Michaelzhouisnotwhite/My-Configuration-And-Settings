@@ -2,10 +2,17 @@ import argparse
 import os
 import shutil
 import utils
-from utils import print_when_debug
+from utils import print_when_debug, write_json_file, read_json_file, check_cache_folder
 from settings import *
 from enum import Enum, auto
 import api
+from pydantic import BaseModel
+
+
+class FileInfoModel(BaseModel):
+    filename: str
+    cached_time: str
+    modified_time: str
 
 
 class Program:
@@ -34,8 +41,9 @@ class Program:
             with open(STORAGE_INFORMATION_PATH, "w") as f:
                 f.write("{}")
 
-        self.update_information()
-        self.upload_files()
+        check_cache_folder()
+        # self.update_information()
+        # self.upload_files()
 
     def update_information(self):
         self.load_file_info()
@@ -146,6 +154,13 @@ class Program:
         #     self.cur_repo.index.add(staged_files)
         # print_when_debug(self.cur_repo.untracked_files)
         # print_when_debug([pth.a_path for pth in self.cur_repo.index.diff("HEAD")])
+
+    def sync_files(self):
+        gist_data = api.Gist().get_gist(GIST_ID)
+        for file_name in gist_data.files:
+            with open(os.path.join(CACHE_DIR, file_name), "w", encoding="utf-8") as f:
+                f.write(gist_data.files[file_name]["content"])
+        
 
 
 def main():

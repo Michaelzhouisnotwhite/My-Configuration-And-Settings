@@ -12,7 +12,6 @@ class GistModel(BaseModel):
     files: dict
     public: bool = False
 
-
 class Gist:
     url = "https://api.github.com/gists"
 

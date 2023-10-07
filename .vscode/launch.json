@@ -1,0 +1,52 @@
+{
+    // 使用 IntelliSense 了解相关属性。 
+    // 悬停以查看现有属性的描述。
+    // 欲了解更多信息，请访问: https://go.microsoft.com/fwlink/?linkid=830387
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "src/upload_fils add",
+            "type": "python",
+            "request": "launch",
+            "program": "src/upload_files.py",
+            "console": "integratedTerminal",
+            "justMyCode": true,
+            "args": [
+                "add",
+                "README.md",
+                "-c",
+                "test_file"
+            ]
+        },
+        {
+            "name": "src/upload_fils cat",
+            "type": "python",
+            "request": "launch",
+            "program": "src/upload_files.py",
+            "console": "integratedTerminal",
+            "justMyCode": true,
+            "args": [
+                "cat",
+                "README.md",
+            ]
+        },
+        {
+            "name": "test/sync_file.py",
+            "type": "python",
+            "request": "launch",
+            "program": "test/sync_file.py",
+            "console": "integratedTerminal",
+            "justMyCode": true,
+            "windows": {
+                "env": {
+                    "PYTHONPATH": "${workspaceFolder}/src;${workspaceFolder}"
+                }
+            },
+            "linux": {
+                "env": {
+                    "PYTHONPATH": "${workspaceFolder}/src:${workspaceFolder}"
+                }
+            }
+        }
+    ]
+}
