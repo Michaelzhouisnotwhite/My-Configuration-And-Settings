@@ -1,18 +1,24 @@
 import argparse
 import os
+import time
 import shutil
 import utils
 from utils import print_when_debug, write_json_file, read_json_file, check_cache_folder
 from settings import *
 from enum import Enum, auto
 import api
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
+from datetime import datetime
 
 
 class FileInfoModel(BaseModel):
     filename: str
     cached_time: str
     modified_time: str
+
+
+# class FileRecorderModel(BaseModel):
+#     create_time:str = Field(title="Created Time")
 
 
 class Program:
@@ -131,6 +137,9 @@ class Program:
     def see_file_content(self):
         ...
 
+    def update_file(self):
+        ...
+
     def upload_files(self):
         gist_data = api.Gist().get_gist(GIST_ID)
         file_dict = {}
@@ -155,12 +164,27 @@ class Program:
         # print_when_debug(self.cur_repo.untracked_files)
         # print_when_debug([pth.a_path for pth in self.cur_repo.index.diff("HEAD")])
 
-    def sync_files(self):
+    def init_repo(self):
+        file_recorder_dict = {"Created Time": utils.get_cur_time(), "files": {}}
+        if os.path.exists(os.path.join(CACHE_DIR, "file_recorder.json")):
+            raise RuntimeError("file_recorder.json exists")
+
+        with open(os.path.join(CACHE_DIR, "file_recorder.json"), "w", encoding="utf-8") as f:
+            json.dump(file_recorder_dict, f, indent=2)
+
+    def repo_push(self):
+        ...
+
+    def sync_files(self, force=False):
         gist_data = api.Gist().get_gist(GIST_ID)
+        file_recorder_dict = json.loads(gist_data["file_recorder.json"]["content"])
         for file_name in gist_data.files:
-            with open(os.path.join(CACHE_DIR, file_name), "w", encoding="utf-8") as f:
-                f.write(gist_data.files[file_name]["content"])
-        
+            file_abs_path = os.path.join(CACHE_DIR, file_name)
+            if force or not os.path.exists(file_abs_path):
+                with open(file_abs_path, "w", encoding="utf-8") as f:
+                    f.write(gist_data.files[file_name]["content"])
+            else:
+                modify_time = datetime.fromtimestamp(os.stat(file_abs_path).st_mtime)
 
 
 def main():
